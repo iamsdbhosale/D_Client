@@ -189,3 +189,11 @@ const WFO_TOKEN_ADDRESS = "0x564806dc1D412a0a125A84320Eb6357aD3bBD75f";
 
 PS D:\client> npm start
 ---
+| Account                                 | Station ID | Vehicle ID  | Amount  | Timestamp              |
+|----------------------------------------|------------|-------------|---------|------------------------|
+| 0x8530d5a6470dD896Bb476c426fd67d2aC408dcc8 | Station001 | MH13CS3284 | 15 WFO  | 5/31/2025, 3:10:20 PM  |
+| 0x5d97062B70f5AdAff2D6d3706954FaFE775b4139 | Station002 | MH13AL8369 | 10 WFO  | 5/31/2025, 3:12:06 PM  |
+| 0x5d97062B70f5AdAff2D6d3706954FaFE775b4139 | Station002 | EV00369    | 40 WFO  | 5/31/2025, 3:13:19 PM  |
+
+---
+
