@@ -9,22 +9,21 @@ function App() {
   const [account, setAccount] = useState("");
   const [contract, setContract] = useState(null);
   const [form, setForm] = useState({ stationId: "", vehicleId: "", amount: "" });
-  const [isApproved, setIsApproved] = useState(false);
   const [payments, setPayments] = useState([]);
-  const [showExplorer, setShowExplorer] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       const accounts = await web3.eth.getAccounts();
       setAccount(accounts[0]);
 
-      const deployed = new web3.eth.Contract(EVChargingPayment.abi, EV_CONTRACT_ADDRESS);
-      setContract(deployed);
+      const evContract = new web3.eth.Contract(EVChargingPayment.abi, EV_CONTRACT_ADDRESS);
+      setContract(evContract);
 
-      // Load existing payments from localStorage
-      const stored = JSON.parse(localStorage.getItem("paymentRecords") || "[]");
-      setPayments(stored);
+      // Load saved payments
+      const saved = JSON.parse(localStorage.getItem("paymentRecords") || "[]");
+      setPayments(saved);
     };
+
     init();
   }, []);
 
@@ -49,7 +48,6 @@ function App() {
       .send({ from: account });
 
     alert("✅ WFO token approved!");
-    setIsApproved(true);
   };
 
   const makePayment = async () => {
@@ -70,36 +68,27 @@ function App() {
       setPayments(updated);
 
       alert("✅ Payment successful!");
-
-      setForm({ stationId: "", vehicleId: "", amount: "" });
-      setIsApproved(false);
     } catch (err) {
       console.error(err);
       alert("❌ Payment failed!");
     }
   };
 
-  const isFormFilled = form.stationId && form.vehicleId && form.amount;
-
-  const toggleExplorer = () => {
-    setShowExplorer(!showExplorer);
-  };
-
   const downloadJSON = () => {
-    const blob = new Blob([JSON.stringify(payments, null, 2)], { type: "application/json" });
+    const dataStr = JSON.stringify(payments, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "payments.json";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "payments.json";
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div style={{ padding: 30 }}>
-      <h1>🚗🏍️⚡ EV Charging Payment DApp</h1>
-      <p>🔗 Connected Wallet: {account}</p>
+      <h1>🚗 EV Charging Payment</h1>
+      <p><strong>Connected Wallet:</strong> {account}</p>
 
       <input
         type="text"
@@ -122,54 +111,37 @@ function App() {
         onChange={(e) => setForm({ ...form, amount: e.target.value })}
       /><br /><br />
 
-      <button onClick={approveWFO} disabled={!isFormFilled}>
-        ✅ Approve Token
-      </button>
-      &nbsp;
-      <button onClick={makePayment} disabled={!isFormFilled || !isApproved}>
-        💰 Make Payment
-      </button>
-      &nbsp;
-      <button onClick={toggleExplorer}>
-        📜 {showExplorer ? "Hide Explorer" : "Blockchain Explorer"}
-      </button>
-      &nbsp;
-      <button onClick={downloadJSON}>
-        ⬇️ Download JSON
-      </button>
+      <button onClick={approveWFO}>Approve Token</button>
+      <button onClick={makePayment} style={{ marginLeft: "10px" }}>Make Payment</button>
+      <button onClick={downloadJSON} style={{ marginLeft: "10px" }}>Download JSON</button>
 
-      {showExplorer && (
-        <div style={{ marginTop: 30 }}>
-          <h2>📊 Payment History</h2>
-          <table border="1" cellPadding="8" cellSpacing="0">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Wallet</th>
-                <th>Station ID</th>
-                <th>Vehicle ID</th>
-                <th>Amount</th>
-                <th>Timestamp</th>
+      <hr />
+      <h2>📄 Payment History</h2>
+      {payments.length === 0 ? (
+        <p>No records yet.</p>
+      ) : (
+        <table border="1" cellPadding="5">
+          <thead>
+            <tr>
+              <th>Station ID</th>
+              <th>Vehicle ID</th>
+              <th>Amount</th>
+              <th>Wallet</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {payments.map((p, i) => (
+              <tr key={i}>
+                <td>{p.stationId}</td>
+                <td>{p.vehicleId}</td>
+                <td>{p.amount}</td>
+                <td>{p.account}</td>
+                <td>{p.timestamp}</td>
               </tr>
-            </thead>
-            <tbody>
-              {payments.length === 0 ? (
-                <tr><td colSpan="6">No payments found.</td></tr>
-              ) : (
-                payments.map((p, idx) => (
-                  <tr key={idx}>
-                    <td>{idx + 1}</td>
-                    <td>{p.account}</td>
-                    <td>{p.stationId}</td>
-                    <td>{p.vehicleId}</td>
-                    <td>{p.amount}</td>
-                    <td>{p.timestamp}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+          </tbody>
+        </table>
       )}
     </div>
   );
