@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import web3 from "./utils/web3";
 import EVChargingPayment from "./contracts/EVChargingPayment.json";
 
-const EV_CONTRACT_ADDRESS = "0xbd0AfC19cE16e578465f69A3D031BB10160053d8";
-const WFO_TOKEN_ADDRESS = "0xB80A36Ba18A708874f217ED5092A0030c82CC76e";
+const EV_CONTRACT_ADDRESS = "0xf54c3a13F52eacaB25F6E4a1f82D8b9D02Dc977D";
+const WFO_TOKEN_ADDRESS = "0x564806dc1D412a0a125A84320Eb6357aD3bBD75f";
 
 function App() {
   const [account, setAccount] = useState("");
