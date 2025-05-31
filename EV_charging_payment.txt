@@ -140,3 +140,6 @@ It's always safe to have at least 0.05 ETH in your wallet for multiple transacti
 | Sending WFO tokens      | ❌         | Paid in WFO, but gas in ETH  | Still needs ETH   |
 
 ---
+re-directing to different app pages :
+npm install react-router-dom
+---
